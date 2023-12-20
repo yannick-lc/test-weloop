@@ -1,0 +1,15 @@
+Titre : Ajouter un Administrateur
+
+Lors de la création du projet, votre CSM ajoutera les Super Admin/ Admin du projet.
+
+Deux niveaux d'accès sur l'espace de travail en tant qu'administrateur :
+
+1. Super Admin : Seuls les Super Admin peuvent inviter d'autres Super Admin à rejoindre l'intégralité des projets ou des Admin à rejoindre le ou les projets.
+
+2. Admin : Les Admins sont ajoutés par les Super Admin, le CSM Weloop ou d'autres Admins. Les Admins peuvent inviter d'autres Admin à rejoindre les projets dans lesquels ils sont déjà Admins.
+
+Pour ajouter des Admins, rendez-vous sur votre profil.
+
+1. Puis cliquez sur "Team Setting".
+
+2. Renseignez les adresses mail des futurs Super Admins / Admins. Pour les Admins, sélectionnez les projets auxquels vous souhaitez les associer. Les personnes recevront une invitation par email avec les droits admins sur le projet concerné.

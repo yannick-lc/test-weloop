@@ -1,0 +1,6 @@
+Titre : Créer un nouveau projet
+
+Pour créer un nouveau projet, suivez les étapes ci-dessous :
+
+1. Prenez rendez-vous avec notre équipe CSM en vous connectant à votre espace de travail administrateur.
+2. Cliquez sur le symbole "+" situé à côté du nom de votre projet pour commencer le processus de création.

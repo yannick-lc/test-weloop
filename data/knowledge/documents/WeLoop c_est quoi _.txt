@@ -1,0 +1,28 @@
+Titre : WeLoop c'est quoi ?
+
+Description: WeLoop est une plateforme Saas basée sur la communauté et l'expérience utilisateur, proposant une solution comportant deux interfaces pour les utilisateurs finaux et les administrateurs.
+
+Interface Utilisateurs (Widget):
+- L'interface pour les utilisateurs finaux s'intègre facilement à vos applications métier.
+
+Interface Administrateurs (Back Office):
+- Les administrateurs de la solution ont accès à une interface spécifique pour gérer les projets et les interactions.
+- Deux niveaux d'administrateurs existent :
+  1. Les Super Admin qui ont accès à tous les projets au sein de l'organisation.
+  2. Les Admin qui sont les responsables opérationnels d'un ou plusieurs projets.
+
+Fonctionnalités du Back Office:
+- Récolte des feedbacks des utilisateurs d'application métier.
+- Utilisation d'une messagerie instantanée pour échanger en direct avec la communauté, comprendre et qualifier leurs besoins.
+- Livraison d'une expérience adaptée aux attentes des utilisateurs.
+- Gestion des feedbacks grâce au KANBAN 100% personnalisable.
+- Création de statuts correspondants à vos processus.
+- Gestion du cycle de vie des feedbacks, de la réception à l'archivage.
+
+Fonctionnalités supplémentaires:
+- Création de sondages.
+- Publication de Release Notes.
+- FAQ pour répondre aux questions fréquentes.
+- Ajout de notes informatives.
+
+WeLoop offre ainsi une solution complète pour améliorer l'expérience utilisateur et la satisfaction au sein de votre organisation.

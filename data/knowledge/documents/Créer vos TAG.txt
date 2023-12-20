@@ -1,0 +1,21 @@
+Titre : A quoi servent les TAGS ?
+
+Les TAGS servent à qualifier les feedbacks des utilisateurs finaux.
+
+Un utilisateur peut ajouter un ou plusieurs tags lorsqu'il crée un feedback.
+
+En tant qu'administrateur, les TAGS vous permettent d'analyser les différentes catégories de feedbacks envoyés par les utilisateurs, de déterminer les tendances, et d'examiner comment les feedbacks sont traités selon les TAGS. Vous pouvez trouver toutes ces données dans le module Statistiques.
+
+Titre : Comment créer des TAGS ?
+
+Pour créer des TAGS, en tant qu'administrateur, vous devez accéder au module Settings --> Général --> TAGS lors de la configuration de votre espace de travail.
+
+Conseil : Ne créez pas plus de 5 TAGS afin de ne pas perdre l'utilisateur lorsqu'il crée son feedback.
+
+Si un utilisateur n'a pas sélectionné le bon TAG lors de la création de son feedback, vous pouvez éditer le feedback en vous rendant dans la carte du feedback --> edit --> ajouter ou retirer des TAGS.
+
+Titre : Le TAG Privé
+
+En tant qu'administrateur, vous avez la possibilité de créer des TAGS privés, qui ne seront visibles que sur votre espace de travail. Ces TAGS permettent d'apporter de la précision aux feedbacks, de les organiser en fonction de votre organisation et de vos processus.
+
+Pour créer vos TAGS privés, rendez-vous dans le module Settings puis General.

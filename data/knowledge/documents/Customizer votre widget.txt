@@ -1,0 +1,16 @@
+Titre : Personnalisation de l'interface utilisateur avec Weloop en marque blanche
+
+Description : Weloop est une solution qui peut être déployée en marque blanche, offrant ainsi la possibilité de personnaliser entièrement l'interface utilisateur selon les besoins.
+
+Étapes pour la personnalisation :
+
+1. Accédez à votre espace de travail Weloop.
+2. Rendez-vous dans le module "Customize".
+3. Configurez l'interface utilisateur en accord avec l'identité visuelle du projet ou de l'entreprise.
+4. Créez les messages à diffuser à chaque étape du parcours utilisateur.
+
+Grâce à Weloop, vous pouvez bénéficier d'une personnalisation complète de l'interface utilisateur, vous permettant ainsi de promouvoir votre propre marque tout en offrant une expérience utilisateur cohérente et engageante.
+
+--- 
+
+Remarque : Le texte ci-dessus est un exemple de mise en forme d'un contenu sous forme de base de connaissance au format .txt. Assurez-vous d'adapter le contenu en fonction du système de gestion de base de connaissances que vous utilisez.

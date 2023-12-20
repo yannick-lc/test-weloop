@@ -1,0 +1,11 @@
+Titre : Synchroniser WeLoop et l'ITSM
+
+La synchronisation à un outil de ticketing permet d'envoyer directement via votre espace de travail WeLoop les feedback à vos équipes de développement.
+
+Chaque administrateur a la possibilité de synchroniser son compte WeLoop à un outil de ticketing.
+
+1. "Profil setting" --> Ticketing --> sélectionner votre outil de ticketing
+
+2. Ajouter le TOKEN de votre compte outil de ticketing (cliquez sur Need help et laissez-vous guider)
+
+Si votre outil de ticketing est "On Premise" et une configuration personnalisée est nécessaire, n'hésitez pas à contacter votre CSM.

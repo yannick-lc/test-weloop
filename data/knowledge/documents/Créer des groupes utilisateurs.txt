@@ -1,0 +1,35 @@
+Titre : WeLoop - Création de groupes utilisateurs
+
+Description :
+WeLoop vous permet de créer des groupes utilisateurs en nombre illimité, adaptés à votre cas d'usage spécifique.
+
+Titre: Créer des groupes utilisateurs
+
+La création de groupes permet de regrouper des utilisateurs partageant des thématiques communes afin de faciliter leurs interactions.
+
+Exemples de groupes possibles :
+- Zone géographique
+- Usage de l'application
+- Département de l'entreprise
+- Utilisateurs internes / externes
+
+Une fois les groupes créés, vous pouvez effectuer des communications descendantes (feedback, notes de version et sondages) soit par groupe spécifique, soit à tous les groupes en sélectionnant "all group".
+
+Comment créer vos groupes utilisateurs :
+
+Option 1 :
+
+1. Accédez au module "Widget user".
+
+2. Cochez le bouton vert pour activer la fonctionnalité de groupes utilisateurs.
+
+3. Créez les noms de vos groupes.
+
+4. Sélectionnez les utilisateurs que vous souhaitez ajouter à un groupe.
+
+5. Choisissez le groupe dans lequel vous souhaitez ajouter vos utilisateurs.
+
+Option 2 :
+
+Si vous préférez automatiser la création de groupes via le SSO (Single Sign-On), veuillez contacter votre CSM (Customer Success Manager) pour convenir d'un rendez-vous avec notre équipe technique.
+

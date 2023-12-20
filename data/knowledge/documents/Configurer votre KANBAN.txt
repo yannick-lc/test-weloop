@@ -1,0 +1,19 @@
+Titre : Guide du KANBAN personnalisable
+
+Description : L'espace de travail offre un KANBAN 100% personnalisable par application, permettant de gérer efficacement les étapes des processus et les feedbacks.
+
+Ajouter des colonnes en illimité :
+Vous pouvez créer autant de colonnes que nécessaire, représentant les différentes étapes du cycle de vie des feedbacks.
+
+Nommer les statuts :
+Attribuez un nom à chaque statut de feedback pour mieux les identifier.
+
+Activer la colonne "Resolve Column" :
+La colonne "Resolve Column" rassemble les feedbacks résolus. L'activation de cette fonctionnalité permet de garder visibles seulement les sujets en cours sur le widget, tout en donnant accès à l'utilisateur à l'historique complet des feedbacks traités depuis le début du projet.
+
+Le bloc "Resolved Feedback" :
+L'activation de la colonne "Resolve Column" affiche le bloc regroupant les feedbacks résolus et archivés depuis le début du projet. L'utilisateur peut les consulter et donner son avis.
+
+Faire évoluer les feedbacks sur le KANBAN :
+Permet d'effectuer des actions sur les feedbacks en cours pour les faire progresser dans le processus.
+Remarque : Les noms de statuts sont visibles par les utilisateurs finaux, ce qui leur permet de suivre en temps réel l'évolution de leurs feedbacks et assure une communication descendante.

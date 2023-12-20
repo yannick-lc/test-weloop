@@ -1,0 +1,14 @@
+Titre : Paramétrages et Préférences
+
+Pour configurer votre profil, suivez les étapes ci-dessous :
+
+1. Accédez à "Profil Settings" (Réglages du profil), où vous pouvez effectuer les actions suivantes :
+
+- Ajouter votre photo de profil.
+- Renseigner votre poste ou fonction.
+- Modifier votre mot de passe.
+- Configurer la langue pour la traduction du contenu utilisateur.
+
+2. Utilisez "App Followed" (Applications suivies) pour gérer vos notifications et choisir les projets que vous souhaitez suivre.
+
+Enregistrez les modifications apportées à votre profil pour qu'elles prennent effet.
