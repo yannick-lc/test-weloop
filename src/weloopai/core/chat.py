@@ -3,57 +3,37 @@ Doc
 """
 
 import logging
+import pickle
+import time
 
 from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain_core.messages import SystemMessage, AIMessage, HumanMessage
+from langchain_core.messages import BaseMessage, SystemMessage, AIMessage, HumanMessage
 from langchain.schema import StrOutputParser
 from langchain.chat_models import ChatOpenAI
 
 from weloopai.core.store import Storer
+from weloopai.config.prompts import SYSTEM_PROMPT, QUESTION_PROMPT, WELCOME_MESSAGE, WAIT_PROMPT, BYE_PROMPT
+from weloopai.config.configuration import CONVERSATIONS_FOLDER
 
 logger = logging.getLogger("chat")
 
 
-# SYSTEM_PROMPT = """Tu t'appelles Edmond. Réponds à l'utilisateur en faisant des réponses de quelques mots,
-# et en utilisant des smileys (":)", ";)", etc.) pour montrer des émotions."""
+class ChatBot:
 
-WELCOME_MESSAGE = "> Bonjour, en quoi puis-je vous aider ?"
-
-BYE_PROMPT = "Au revoir, bonne fin de journée !"
-
-SYSTEM_PROMPT = f"""Tu es un assistant pour des tâches de questions-réponses, nommé Weloop.ai.
-Utilise les documents fournis pour répondre à la question.
-Si la réponse à la question n'est pas dans les documents, dis que tu n'as pas d'information sur le sujet.
-Pose ensuite une ou des questions à l'utilisateur pour mieux cerner son besoin.
-Important : si la réponse à la question n'est pas dans les documents, n'essaie pas de répondre à la question. Collecte seulement des informations sur le problème. Précise ensuite que tu transmettras ces informations au support technique.
-Une fois que l'utilisateur n'a plus de questions, dis précisément (à la lettre près) : "{BYE_PROMPT}"
-Soit respectueux et concis. Utilise trois phrases maximum par réponse, et vouvoie l'utilisateur."""
-
-SYSTEM_PROMPT = f"""Tu es un assistant pour des tâches de questions-réponses, nommé Weloop.ai.
-Tu utilises les documents fournis (appelés "ma base de connaissances") pour répondre à une question.
-
-Si la réponse à la question est dans les documents, réponds à la question en faisant des réponses de quelques mots, et demande à l'utilisateur si cela répond bien à sa question.
-
-Si la réponse à la question n'est pas dans les documents :
-- Commence par indiquer que tu n'as pas d'information sur le sujet.
-- Puis pose quelques questions à l'utilisateur pour mieux cerner son besoin.
-N'essaie pas de répondre à la question, mais ne reprécise pas que tu ne peux pas y répondre. Collecte seulement des informations sur le problème. Précise ensuite que tu transmettras ces informations au support technique.
-
-Une fois la conversation terminée, dis précisément (à la lettre près) : "{BYE_PROMPT}"
-Soit respectueux et concis. Utilise trois phrases maximum par réponse, et vouvoie l'utilisateur."""
-
-QUESTION_PROMPT = "Question: {question} \nDocuments: \n\n{documents}"
-
-WAIT_PROMPT = "> Je cherche la réponse à votre question... "
-
-
-class Chatter:
-
-    MODEL_NAME = "gpt-3.5-turbo-0613"
+    MODEL_NAME = "gpt-3.5-turbo-1106"
     MAX_CONVERSATION_LENGTH = 100
 
-    def __init__(self):
-        self.llm = ChatOpenAI(model_name=self.MODEL_NAME, temperature=0)
+    def __init__(self, conv_id=None):
+        if conv_id is None:
+            conv_id = int(time.time()*1000) # generate a unique id
+        self.conv_id = conv_id
+        logger.info(f"Started conversation with id {self.conv_id}")
+
+        self.llm = ChatOpenAI(
+            model_name=self.MODEL_NAME,
+            temperature=0,
+            model_kwargs={"frequency_penalty": 1.0}
+        )
         self.messages = [
             SystemMessage(content=SYSTEM_PROMPT)
         ]
@@ -71,7 +51,6 @@ class Chatter:
             print(chunk, end="", flush=True)
             response += chunk
         print()
-        # Save answer
         self.messages.append(AIMessage(content=response))
         return response
 
@@ -81,7 +60,10 @@ class Chatter:
             HumanMessagePromptTemplate.from_template(QUESTION_PROMPT)
         ])
         retrieved_docs = self.retriever.get_relevant_documents(question)
-        formatted_docs = "\n\n".join([f"Document {i+1}\n\n" + doc.page_content for i, doc in enumerate(retrieved_docs)])
+        formatted_docs = "\n\n".join([
+            (f"Document {i+1}\n\n" + doc.page_content)
+            for i, doc in enumerate(retrieved_docs)
+        ])
 
         parameters = {"question": question, "documents": formatted_docs}
         self.messages = prompt.invoke(parameters).messages
@@ -99,26 +81,47 @@ class Chatter:
         return response
 
     def chat(self):
-        question = input()
+        print(WELCOME_MESSAGE)
+        question = input("> ")
         print(WAIT_PROMPT, end="", flush=True)
         answer = self.answer_from_doc(question)
         for _ in range(self.MAX_CONVERSATION_LENGTH):
             question = input("> ")
             answer = self.answer(question)
+            self._save_conversation()
+            # Stop if conversation is over
             if answer.strip().endswith(BYE_PROMPT):
                 break
+
+    # Save and load utils
             
+    @classmethod
+    def list_conversations(cls) -> list[int]:
+        """Return a list of saved conversation ids"""
+        # list files by reverse chrionological order
+        files = sorted(CONVERSATIONS_FOLDER.glob('*.pkl'), reverse=True)
+        ids = [int(file.name.split('.')[0]) for file in files]
+        return ids
+            
+    @classmethod
+    def load_conversation(cls, conv_id: int) -> list[BaseMessage]:
+        """Load and return a conversation from pickle file"""
+        with open(CONVERSATIONS_FOLDER / f"{conv_id}.pkl", "rb") as f:
+            messages = pickle.load(f)
+        return messages
+
+    def _save_conversation(self) -> None:
+        """Save current conversation in pickle file"""
+        messages = self.messages[1:] # remove system prompt
+        with open(CONVERSATIONS_FOLDER / f"{self.conv_id}.pkl", "wb") as f:
+            pickle.dump(messages, f)
+
+
 
 
 def start_chat() -> None:
     """
     Doc
     """
-    print(WELCOME_MESSAGE)
-    chatter = Chatter()
+    chatter = ChatBot()
     chatter.chat()
-
-# Utils
-    
-def format_docs(docs):
-    return "\n\n".join(doc.page_content for doc in docs)

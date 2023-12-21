@@ -35,7 +35,7 @@ Examples
 Serve with API (e.g. using LangServe)
 Docker
 Config: use env variables to select where knowledge is stored etc
-Use a database to store and retrieve conversations
+Use a database to store and retrieve conversations, use a more human readable format
 
 AI: reranking etc
 Hypothetical document embedding https://arxiv.org/abs/2212.10496
@@ -58,6 +58,8 @@ Temperature of 0 because...
 
 LLM prompt for retrieval: French translation of "standard" prompt for retrieval
 
+LLM for summary and chat are the same for now, but could be changed
+
 Documents are short so no splitting is necessary for embedding
 
 Limits: for now, dependent on external API (OpenAI).
@@ -75,5 +77,7 @@ Check if conv is finished.
 
 packages: langchain + hub, chromadb, openai, tiktoken, langchainhub, ipykernel (for notebooks), unstructured
 
-## Exemples de questions :
+## Exemples
+
+TODO
 
