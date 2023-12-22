@@ -5,29 +5,41 @@
 
 **Author**: Yannick Le Cacheux
 
-This is a simple demo of a tool...
+This is a demo of a simple tool that enables a user to ask questions to a model, which then looks for an answer in a given set of documents. It may also ask follow-up questions if necessary.
+The tools enables to later obtain a summary of conversations.
 
-<pre style="background-color: black; color: white; font-family: monospace;"><code>
-> Bonjour, en quoi puis-je vous aider ?
-<span style="color: #3388FF;">> Comment changer la couleur de l'interface utilisateur ?</span>
-> Je cherche la réponse à votre question... Vous pouvez changer la couleur de l'interface utilisateur en accédant à votre espace de travail Weloop, puis en vous rendant dans le module "Customize". Ensuite, vous pourrez configurer l'interface utilisateur selon les besoins d'identité visuelle du projet ou de l'entreprise. Est-ce que cela répond à votre question ?
-<span style="color: #3388FF;">> oui</span>
-> Parfait ! N'hésitez pas à revenir vers moi si vous avez d'autres questions.
-<span style="color: #3388FF;">> dac</span>
-> Au revoir, joyeuses fêtes de fin d'année !
+Example of a conversation between the user and the model<sup>[[1](#note1)]</sup>:
+
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+> Comment changer la couleur de l'interface utilisateur ?
+<span style="color: #777777;">> Vous pouvez changer la couleur de l'interface utilisateur en accédant à votre espace de travail Weloop, puis en vous rendant dans le module "Customize". Ensuite, vous pourrez configurer l'interface utilisateur selon les besoins d'identité visuelle du projet ou de l'entreprise. Est-ce que cela répond à votre question ?</span>
+> oui
+<span style="color: #777777;">> Parfait ! N'hésitez pas à revenir vers moi si vous avez d'autres questions.</span>
+> ok
+<span style="color: #777777;">> Au revoir, bonne fin de journée !</span>
 </code></pre>
 
 See section [Examples](#examples) for more samples of conversations and summaries.
 
+<sub>[1]: <a id="note1"></a>Unfortunately, Github's Markdown version does not support custom colors or line wraps in code sections. For better readability, it is thus advised to look at this (and the other) example(s) in a different Markdown viewer.</sub>
+
 ## Install
 
-After cloning the repo, create a Python environment (e.g. using conda) and install requirements:
+Clone the repo and `cd` into the corresponding folder:
+```bash
+git clone git@github.com:yannick-lc/test-weloop.git
+cd test-weloop
+```
+
+Create a Python environment (e.g. using conda) and install requirements:
 ```bash
 conda create -n weloop python=3.10
 conda activate weloop
 pip install -r requirements.txt
 pip install -e .
 ```
+
+If you don't alreay have one, obtain an [API key](https://openai.com/blog/openai-api) for OpenAI.
 
 ## Run
 
@@ -38,74 +50,103 @@ export OPENAI_API_KEY="your-api-key"
 
 To start a conversation and ask questions to the model:
 ```bash
-weloop chat
+weloopai chat
 ```
 
 To have a summary of the latest conversation:
 ```bash
-weloop summary
+weloopai summary
 ```
 
 To refresh the model's knowledge with additional file (by default, `.txt` files located in `data/knowledge/documents`):
 ```bash
-weloop store
+weloopai store
 ```
 
 See section [Examples](#examples) for samples of conversations and summaries.
 
 ## Overview
 
-## Improvements
+### General approach: Retrieval-Augmented Generation
 
-Unit tests
+The approach is based on a standard Retrieval-Augmented Generation (RAG) pipeline:
 
-Serve with API (e.g. using LangServe)
-Docker
-Config: use env variables to select where knowledge is stored etc
-Use a database to store and retrieve conversations, use a more human readable format
+Documents that contain knowledge to be used by the model are embedded as vectors, so that semantic similarity can be performed.
+Then, when the user asks a questions, the question is embedded to retrieve the top-K document extracts most relevant to the query.
 
-AI: reranking etc
-Hypothetical document embedding https://arxiv.org/abs/2212.10496
+Text extracts are then integrated into the prompt, and a Large Language Model (LLM) is asked whether or not then contain the answer to the question, and to provide an answer in the former case.
 
-Return source documents
+A follow-up conversation with the LLM may then take place if necessary.
 
-Better prompt engineering ofc (and few-shot learning)
+> [!note]
+> The advantages of this approach are that it is:
+> - Flexible: embedding functions, LLMs, prompts etc can all be changed easily to improve performance, reduce cost etc.
+> - Scalable: it can be seemlessly scaled to thousands of documents.
+> - Standard: it is well-known among AI practicioners and relies on well-maintained libraries, so that maintenance of the software is easy.
 
-## General doc and discussion
+### Specificities of this use case
 
-Built with RAG and Langchain (link)
-RAG because scalable
-Langchain because easy to deploy
+Since there are two tasks in this use case (answering a question, and summarizing a text), 2 system prompts are used: one for answering question, and one for producing summaries.
 
-Details of RAG pipeline:
-OpenAIEmbedding (Ada?) for embeddings
-GPT3.5 by default as LLM, because easy to integrate and perf OK
-(easy to upgrade to GPT4 for better perf (but more costly))
-Temperature of 0 because...
+### Implementation details and hyper-parameters
 
-LLM prompt for retrieval: French translation of "standard" prompt for retrieval
+Implementation was done mostly using Langchain, as it allows to easily implement RAG pipeline.
 
-LLM for summary and chat are the same for now, but could be changed
+GPT3.5 was used as the default LLM, because it is easy to integrate (only requires API calls) its performance is OK and its cost reasonable.
+(it would be of course easy to upgrade to GPT4 for better performance, but it would be more costly).
+The LLM used for summary and chat is the same for now, but it could easily be changed.
 
-Documents are short so no splitting is necessary for embedding
+Similarly, OpenAI embeddings were used (corresponding to `text-embedding-ada-002`).
+
+Temperature of the LLM was set to 0 to produce reproducible answers, more likely to be correct.
+
+Documents are short so no splitting is necessary for embedding.
+
+2 documents were (and are) retrieved per search to limit the number of tokens used during tests, which seemed to be enough.
+
+## Limits of the approach and possible improvements
+
+This section describes improvements that could be made to the AI.
+
+As of now, the AI retrieves documents only after the first question. A better approach would be:
+- After a question is asked, determine whether a document search is useful to answer using a LLM and prompts hidden to the user
+- If documents are indeed useful, perform a semantic similarity search to retrieve documents, and prompt the AI to find useful information in the corresponding text.
+- Finally, answer to the user.
+- Repeat for each question.
+
+However, this approach takes longer to implement, and may be more costly as more tokens are being used for each query.
+
+A similar techique may also be applied to determine whether the conversation should be ended, or more follow-up questions should be asked.
+
+It may also be useful to return the "raw" documents that were used to answer a question to the user.
+
 
 Limits: for now, dependent on external API (OpenAI).
 Tendancy to introduce breaking changes (deprecate models, change API etc).
 Also, limits of used embeddings and LLM obviously
 
-For now and to limit consumption of resources, we only try to look for answers after the first question.
-Ideally, we would want to first check if question asked requires to look for documents, retrieve documents if relevant,
-and then answer question.
-Make it more resilient to malicious prompt injections, monitor usage / set up limits etc.
+Quite obviously, many other aspects may be improved, such as:
+- Use different LLMs, embeddings etc to improve performance (e.g. GPT4, although it is much more costly)
+- If necessary (e.g. for cost, confidentiality or maintainability reasons), an open-source LLM operating on-premise (e.g. Llama v2) may be used instead
+- Use more advanced techniques for document retrieval: document reranking, hypothetical document embedding (https://arxiv.org/abs/2212.10496) etc
+- Prompts used for now were crafted fairly quickly and only lightly tested, so it is certain that better prompts could be engineered.
+- In particular, it would very probably be useful to use an approach based on few shot learning.
+- ...
 
-Check if conv is finished.
+Finally, to improve performance, more tests should be conducted.
+Additional tests would also be required to ensure the model is safe and reasonably resilient to malicious prompt injections.
 
-System prompt is different
-LLM is same but might be changed
 
-## Misc
+## Industrialization
 
-packages: langchain + hub, chromadb, openai, tiktoken, langchainhub, ipykernel (for notebooks), unstructured
+The following tasks (not related to the AI itself) should be done to industrialize the model:
+- Serve the model with an API (e.g. using LangServe, Flask...)
+- Add unit tests
+- Make the configuration more flexible, by using environment variables to define where knowledge is stored etc
+- Set up a database to store and retrieve conversations instead of simple files
+- Package using Docker
+- Configure logging, add monitoring to the model in production etc
+- ...
 
 
 
@@ -121,7 +162,7 @@ Pour cette question, la réponse se trouve dans les documents.
 $ weloopai chat
 ```
 <!-- We need to use a custom style to display code as it is otherwise impossible to color code in markdown -->
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Comment changer la couleur de l'interface utilisateur ?
 <span style="color: #777777;">> Vous pouvez changer la couleur de l'interface utilisateur en accédant à votre espace de travail Weloop, puis en vous rendant dans le module "Customize". Ensuite, vous pourrez configurer l'interface utilisateur selon les besoins d'identité visuelle du projet ou de l'entreprise. Est-ce que cela répond à votre question ?</span>
 > oui
@@ -134,7 +175,7 @@ $ weloopai chat
 ```bash
 $ weloopai summary
 ```
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Résumé : L'utilisateur cherchait à savoir comment changer la couleur de l'interface utilisateur sur Weloop. Je lui ai expliqué qu'il pouvait le faire en accédant à son espace de travail Weloop, puis en se rendant dans le module "Customize" pour configurer l'interface selon les besoins d'identité visuelle du projet ou de l'entreprise. L'utilisateur a confirmé avoir compris et n'a pas posé d'autres questions.</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Résumé : L'utilisateur cherchait à savoir comment changer la couleur de l'interface utilisateur sur Weloop. Je lui ai expliqué qu'il pouvait le faire en accédant à son espace de travail Weloop, puis en se rendant dans le module "Customize" pour configurer l'interface selon les besoins d'identité visuelle du projet ou de l'entreprise. L'utilisateur a confirmé avoir compris et n'a pas posé d'autres questions.</span>
 </code></pre>
 
 
@@ -146,7 +187,7 @@ La réponse est implicitement dans les documents (Jira n'est pas mentionné mais
 L'utilisateur ne comprend pas les instructions.
 
 **Conversation**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Comment synchroniser Weloop avec Jira ?
 <span style="color: #777777;">> La synchronisation de Weloop avec Jira se fait en accédant à vos paramètres de profil, puis en sélectionnant Jira dans la section "Ticketing" et en ajoutant le TOKEN de votre compte Jira. Est-ce que cela répond à votre question ?</span>
 > non, je ne trouve pas les paramètres de profil       
@@ -158,7 +199,7 @@ L'utilisateur ne comprend pas les instructions.
 </code></pre>
 
 **Résumé**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> L'utilisateur rencontre des difficultés pour trouver l'emplacement des paramètres de profil dans la version 375 de Weloop. Il a mentionné qu'il ne parvient pas à accéder à ces paramètres.</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> L'utilisateur rencontre des difficultés pour trouver l'emplacement des paramètres de profil dans la version 375 de Weloop. Il a mentionné qu'il ne parvient pas à accéder à ces paramètres.</span>
 </code></pre>
 
 
@@ -168,7 +209,7 @@ L'utilisateur ne comprend pas les instructions.
 La réponse n'est pas dans les documents.
 
 **Conversation**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Comment enregistrer les feedbacks au format ded word ?
 <span style="color: #777777;">> Je n'ai pas d'informations sur l'enregistrement de feedbacks au format Word. Pourriez-vous me donner plus de détails sur le processus que vous souhaitez effectuer ?</span>
 > J'ai des feedbacks dans l'outil, j'aimerais tous les exporter au format word
@@ -178,7 +219,7 @@ La réponse n'est pas dans les documents.
 </code></pre>
 
 **Résumé**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> L'utilisateur souhaite exporter des feedbacks depuis l'outil vers un format Word, car le copier-coller n'est pas pratique. Il n'a pas trouvé de fonctionnalité d'exportation dans l'outil et n'a pas envisagé d'utiliser un autre type de fichier pour stocker les feedbacks.</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> L'utilisateur souhaite exporter des feedbacks depuis l'outil vers un format Word, car le copier-coller n'est pas pratique. Il n'a pas trouvé de fonctionnalité d'exportation dans l'outil et n'a pas envisagé d'utiliser un autre type de fichier pour stocker les feedbacks.</span>
 </code></pre>
 
 
@@ -189,7 +230,7 @@ La réponse n'est pas dans les documents.
 La réponse n'est pas explicite, mais les documents sous-entendent que non.
 
 **Conversation**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Peut-on créer des tags si on n'est pas administrateur ?
 <span style="color: #777777;">> En tant qu'administrateur, vous pouvez créer des tags en accédant au module Settings --> Général --> TAGS lors de la configuration de votre espace de travail. Cela répond-il à votre question ?</span>
 > non, je ne suis pas administrateur. Est-ce que je peux quand même créer des tags ?
@@ -201,7 +242,7 @@ La réponse n'est pas explicite, mais les documents sous-entendent que non.
 </code></pre>
 
 **Résumé**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> L'utilisateur a demandé s'il était possible de créer des tags sans être administrateur. Il a précisé qu'il occupait un rôle de "floppeur" et souhaitait créer des tags pour bifurquer les quaternions. Il a confirmé qu'il n'était pas administrateur et a exprimé son besoin de créer des tags dans ce contexte.</span>
+<pre style="background-color: black; color: white; font-family: monospace; white-space: pre-wrap;"><code><span style="color: #777777;">> L'utilisateur a demandé s'il était possible de créer des tags sans être administrateur. Il a précisé qu'il occupait un rôle de "floppeur" et souhaitait créer des tags pour bifurquer les quaternions. Il a confirmé qu'il n'était pas administrateur et a exprimé son besoin de créer des tags dans ce contexte.</span>
 </code></pre>
 
 
@@ -212,18 +253,17 @@ La réponse n'est pas explicite, mais les documents sous-entendent que non.
 La réponse ne se trouve pas dans les documents.
 
 **Conversation :**
-```
-> Bonjour, en quoi puis-je vous aider ?
+<pre style="background-color: black; color: white; font-family: monospace;white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Que mangent les tigres ?
-> Je cherche la réponse à votre question... Je n'ai pas d'information sur les tigres. Quel type de renseignement cherchez-vous exactement ? Que mangent les tigres dans leur habitat naturel ou en captivité ?
+<span style="color: #777777;">> Je n'ai pas d'information sur les tigres. Quel type de renseignement cherchez-vous exactement ? Que mangent les tigres dans leur habitat naturel ou en captivité ?</span>
 > captivité, c'est pour mon tigre nommé Gérard
-> Je n'ai pas d'information sur les besoins alimentaires spécifiques des tigres en captivité. Pouvez-vous me dire ce que vous donnez actuellement à Gérard et si vous avez des préoccupations particulières concernant son alimentation ?
+<span style="color: #777777;">> Je n'ai pas d'information sur les besoins alimentaires spécifiques des tigres en captivité. Pouvez-vous me dire ce que vous donnez actuellement à Gérard et si vous avez des préoccupations particulières concernant son alimentation ?</span>
 > je lui donne des haricots verts, mais je suis pas sûr qu'il aime ça
-> Je transmettrai ces informations au support technique pour obtenir des conseils sur l'alimentation appropriée pour Gérard. Merci de m'avoir fourni ces détails. Au revoir, bonne fin de journée !
-```
+<span style="color: #777777;">> Je transmettrai ces informations au support technique pour obtenir des conseils sur l'alimentation appropriée pour Gérard. Merci de m'avoir fourni ces détails. Au revoir, bonne fin de journée !</span>
+</code></pre>
 
 **Résumé**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> L'utilisateur a mentionné donner des haricots verts à son tigre en captivité, nommé Gérard, mais n'est pas sûr que cela lui convienne. Il cherche des conseils sur l'alimentation appropriée pour son animal.</span>
+<pre style="background-color: black; color: white; font-family: monospace;white-space: pre-wrap;"><code><span style="color: #777777;">> L'utilisateur a mentionné donner des haricots verts à son tigre en captivité, nommé Gérard, mais n'est pas sûr que cela lui convienne. Il cherche des conseils sur l'alimentation appropriée pour son animal.</span>
 </code></pre>
 
 
