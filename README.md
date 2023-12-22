@@ -212,14 +212,15 @@ La réponse n'est pas explicite, mais les documents sous-entendent que non.
 La réponse ne se trouve pas dans les documents.
 
 **Conversation :**
-<pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
+```
+> Bonjour, en quoi puis-je vous aider ?
 > Que mangent les tigres ?
-<span style="color: #777777;">> Je cherche la réponse à votre question... Je n'ai pas d'information sur les tigres. Quel type de renseignement cherchez-vous exactement ? Que mangent les tigres dans leur habitat naturel ou en captivité ?</span>
+> Je cherche la réponse à votre question... Je n'ai pas d'information sur les tigres. Quel type de renseignement cherchez-vous exactement ? Que mangent les tigres dans leur habitat naturel ou en captivité ?
 > captivité, c'est pour mon tigre nommé Gérard
-<span style="color: #777777;">> Je n'ai pas d'information sur les besoins alimentaires spécifiques des tigres en captivité. Pouvez-vous me dire ce que vous donnez actuellement à Gérard et si vous avez des préoccupations particulières concernant son alimentation ?</span>
+> Je n'ai pas d'information sur les besoins alimentaires spécifiques des tigres en captivité. Pouvez-vous me dire ce que vous donnez actuellement à Gérard et si vous avez des préoccupations particulières concernant son alimentation ?
 > je lui donne des haricots verts, mais je suis pas sûr qu'il aime ça
-<span style="color: #777777;">> Je transmettrai ces informations au support technique pour obtenir des conseils sur l'alimentation appropriée pour Gérard. Merci de m'avoir fourni ces détails. Au revoir, bonne fin de journée !</span>
-</code></pre>
+> Je transmettrai ces informations au support technique pour obtenir des conseils sur l'alimentation appropriée pour Gérard. Merci de m'avoir fourni ces détails. Au revoir, bonne fin de journée !
+```
 
 **Résumé**
 <pre style="background-color: black; color: white; font-family: monospace;"><code><span style="color: #777777;">> L'utilisateur a mentionné donner des haricots verts à son tigre en captivité, nommé Gérard, mais n'est pas sûr que cela lui convienne. Il cherche des conseils sur l'alimentation appropriée pour son animal.</span>
