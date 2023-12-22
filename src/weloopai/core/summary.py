@@ -1,35 +1,41 @@
 """
-Doc
+Contains classes and functions to summarize a past conversation
 """
 
 import logging
 
-from langchain.prompts import ChatPromptTemplate, HumanMessagePromptTemplate
-from langchain_core.messages import BaseMessage, SystemMessage, AIMessage, HumanMessage
+from langchain.prompts import ChatPromptTemplate
+from langchain_core.messages import BaseMessage, SystemMessage, HumanMessage
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import StrOutputParser
 
 from weloopai.core.chat import ChatBot
 from weloopai.config.prompts import SUMMARY_PROMPT, SUMMARY_SYSTEM_PROMPT
+from weloopai.config.configuration import COLOR_START, COLOR_END
 
 logger = logging.getLogger("summary")
 
 
 class Summarizer:
     """
-    Summarize
-    For now, LLM is the same as the one used for chat,
-    but we might want to change that in the future
+    Class responsible for summurizing a saved conversation.
     """
     MODEL_NAME = "gpt-3.5-turbo-1106"
 
     def __init__(self) -> None:
-        """Initialize summarizer"""
+        """
+        Initialize summarizer.
+        (For now, LLM is the same as the one used for chat,
+        but we might want to change that in the future.)
+        """
         self.llm = ChatOpenAI(model_name=self.MODEL_NAME, temperature=0)
 
     def summarize(self, conversation: list[BaseMessage]) -> str:
         """
-        Summarize conversation
+        Summarize a given conversation.
+        We add a new system prompt at the beginning specific to the summarization task,
+        then add the conversation, and finally add a prompt at the end
+        to start the summarization.
         """
         # Create prompt
         system_prompt = SystemMessage(content=SUMMARY_SYSTEM_PROMPT)
@@ -39,16 +45,18 @@ class Summarizer:
         # Generate and display answer
         chain = prompt | self.llm | StrOutputParser()
         response = ""
-        print("> ", end="", flush=True)
+        print(COLOR_START + "> ", end="", flush=True)
         for chunk in chain.stream({}):
             print(chunk, end="", flush=True)
             response += chunk
-        print()
+        print(COLOR_END)
         return response
+    
         
 def summarize(conv_id: int=None) -> None:
     """
-    Doc
+    Instantiate a Summarizer, retrieve the conversation corresponding to the given id
+    (or the latest conversation if no id is provided), and summarize it.
     """
     summarizer = Summarizer()
     conversation = _load_conversation(conv_id)

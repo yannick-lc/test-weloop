@@ -27,7 +27,7 @@ def main() -> None:
     Parse arguments and perform actions.
     """
     key = json.loads(Path("keys/openai.json").read_text())["private_key"]
-    os.environ['OPENAI_API_KEY'] = key
+    # os.environ['OPENAI_API_KEY'] = key
 
     parser = argparse.ArgumentParser(
         prog="weloopai",
