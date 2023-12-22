@@ -26,9 +26,6 @@ def main() -> None:
     Entry point of the program.
     Parse arguments and perform actions.
     """
-    key = json.loads(Path("keys/openai.json").read_text())["private_key"]
-    # os.environ['OPENAI_API_KEY'] = key
-
     parser = argparse.ArgumentParser(
         prog="weloopai",
         description="Chat with our brilliant AI or summarize the latest conversation."

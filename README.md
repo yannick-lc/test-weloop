@@ -3,7 +3,7 @@
 ![Python version](https://img.shields.io/badge/python-v3.10-blue)
 ![Platform version](https://img.shields.io/badge/platform-ubuntu-purple)
 
-**Author**: Yannick Le Cacheux
+**Author**: Yannick Le Cacheux. See [LICENSE](/LICENSE).
 
 This is a demo of a simple tool that enables a user to ask questions to a model, which then looks for an answer in a given set of documents. It may also ask follow-up questions if necessary.
 The tools enables to later obtain a summary of conversations.
@@ -21,7 +21,7 @@ Example of a conversation between the user and the model<sup>[[1](#note1)]</sup>
 
 See section [Examples](#examples) for more samples of conversations and summaries.
 
-<sub>[1]: <a id="note1"></a>Unfortunately, Github's Markdown version does not support custom colors or line wraps in code sections. For better readability, it is thus advised to look at this (and the other) example(s) in a different Markdown viewer.</sub>
+<sub>[1]: <a id="note1"></a>Unfortunately, Github's Markdown version does not support custom colors or line wraps in code/bash sections. For better readability, it is thus advised to look at this (and the other) example(s) in a different Markdown viewer.</sub>
 
 ## Install
 
@@ -74,7 +74,7 @@ The approach is based on a standard Retrieval-Augmented Generation (RAG) pipelin
 Documents that contain knowledge to be used by the model are embedded as vectors, so that semantic similarity can be performed.
 Then, when the user asks a questions, the question is embedded to retrieve the top-K document extracts most relevant to the query.
 
-Text extracts are then integrated into the prompt, and a Large Language Model (LLM) is asked whether or not then contain the answer to the question, and to provide an answer in the former case.
+Text extracts are then integrated into the prompt, and a Large Language Model (LLM) is asked whether or not they contain the answer to the question, and to provide an answer in the former case.
 
 A follow-up conversation with the LLM may then take place if necessary.
 
@@ -92,13 +92,13 @@ Since there are two tasks in this use case (answering a question, and summarizin
 
 Implementation was done mostly using Langchain, as it allows to easily implement RAG pipeline.
 
-GPT3.5 was used as the default LLM, because it is easy to integrate (only requires API calls) its performance is OK and its cost reasonable.
-(it would be of course easy to upgrade to GPT4 for better performance, but it would be more costly).
+GPT3.5 was used as the default LLM, because it is easy to integrate (only requires API calls), its performance is OK and its cost reasonable.
+(It would be of course easy to upgrade to GPT4 for better performance, but it would be more costly).
 The LLM used for summary and chat is the same for now, but it could easily be changed.
 
 Similarly, OpenAI embeddings were used (corresponding to `text-embedding-ada-002`).
 
-Temperature of the LLM was set to 0 to produce reproducible answers, more likely to be correct.
+Temperature of the LLM was set to 0 to produce reproducible answers, more likely to be correct. The initial model had a tendency to repeat itself so frequency_penalty was set to 1.0.
 
 Documents are short so no splitting is necessary for embedding.
 
@@ -106,7 +106,7 @@ Documents are short so no splitting is necessary for embedding.
 
 ## Limits of the approach and possible improvements
 
-This section describes improvements that could be made to the AI.
+This section describes improvements that could be made to the AI only. See [next section](#industrialization) for possible improvements related to industrialization.
 
 As of now, the AI retrieves documents only after the first question. A better approach would be:
 - After a question is asked, determine whether a document search is useful to answer using a LLM and prompts hidden to the user
@@ -119,11 +119,6 @@ However, this approach takes longer to implement, and may be more costly as more
 A similar techique may also be applied to determine whether the conversation should be ended, or more follow-up questions should be asked.
 
 It may also be useful to return the "raw" documents that were used to answer a question to the user.
-
-
-Limits: for now, dependent on external API (OpenAI).
-Tendancy to introduce breaking changes (deprecate models, change API etc).
-Also, limits of used embeddings and LLM obviously
 
 Quite obviously, many other aspects may be improved, such as:
 - Use different LLMs, embeddings etc to improve performance (e.g. GPT4, although it is much more costly)
@@ -139,7 +134,7 @@ Additional tests would also be required to ensure the model is safe and reasonab
 
 ## Industrialization
 
-The following tasks (not related to the AI itself) should be done to industrialize the model:
+The following tasks (not related to the AI itself, see [previous section](#limits-of-the-approach-and-possible-improvements)) should be done to industrialize the model:
 - Serve the model with an API (e.g. using LangServe, Flask...)
 - Add unit tests
 - Make the configuration more flexible, by using environment variables to define where knowledge is stored etc
@@ -252,7 +247,7 @@ La réponse n'est pas explicite, mais les documents sous-entendent que non.
 
 La réponse ne se trouve pas dans les documents.
 
-**Conversation :**
+**Conversation**
 <pre style="background-color: black; color: white; font-family: monospace;white-space: pre-wrap;"><code><span style="color: #777777;">> Bonjour, en quoi puis-je vous aider ?</span>
 > Que mangent les tigres ?
 <span style="color: #777777;">> Je n'ai pas d'information sur les tigres. Quel type de renseignement cherchez-vous exactement ? Que mangent les tigres dans leur habitat naturel ou en captivité ?</span>
@@ -265,8 +260,3 @@ La réponse ne se trouve pas dans les documents.
 **Résumé**
 <pre style="background-color: black; color: white; font-family: monospace;white-space: pre-wrap;"><code><span style="color: #777777;">> L'utilisateur a mentionné donner des haricots verts à son tigre en captivité, nommé Gérard, mais n'est pas sûr que cela lui convienne. Il cherche des conseils sur l'alimentation appropriée pour son animal.</span>
 </code></pre>
-
-
-## Bibliography
-
-TODO
